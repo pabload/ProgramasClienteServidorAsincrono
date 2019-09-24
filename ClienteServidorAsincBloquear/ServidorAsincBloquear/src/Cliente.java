@@ -6,12 +6,13 @@ public class Cliente {
 
     String nombre;
     PrintWriter out;
-    ArrayList<String> bloqueados;
+    ArrayList<String> bloqueados = new ArrayList<>();
 
     
     public Cliente(String nombre, PrintWriter out) {
         this.nombre = nombre;
         this.out = out;
+        
     }
 
 }
