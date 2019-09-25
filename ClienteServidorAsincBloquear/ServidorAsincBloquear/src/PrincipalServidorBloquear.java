@@ -1,5 +1,7 @@
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,8 +19,14 @@ import java.util.logging.Handler;
 public class PrincipalServidorBloquear {
 
     private static Map<String, Cliente> users = new HashMap<>();
-
+    //private static Map<String, String> xd = new HashMap<>();
     public static void main(String[] args) throws IOException {
+    /*Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                guardarMap(users);
+            }
+        });*/
         System.out.println("the chat server is running");
         ExecutorService pool = Executors.newFixedThreadPool(500);
         try (ServerSocket listener = new ServerSocket(59001)) {
@@ -57,7 +65,6 @@ public class PrincipalServidorBloquear {
                             Cliente c = new Cliente(name, out);
                             users.put(name, c);
                             out.println("NAMEACCEPTED " + name);
-
                             for (Cliente user : users.values()) {
                                 user.out.println("MESSAGE " + name + " joined");
                             }
@@ -67,7 +74,7 @@ public class PrincipalServidorBloquear {
                 }
                 while (true) {
                     String input = in.nextLine();
-                    if (input.startsWith("/") && !input.startsWith("/quit") && !input.startsWith("/bloquear")) {
+                    if (input.startsWith("/") && !input.startsWith("/quit") && !input.startsWith("/bloquear")&&!input.startsWith("/desbloquear")) {
                         System.out.println("enntro1");
                         if (input.indexOf(" ") >= 0) {
                             System.out.println("enntro2");
@@ -98,19 +105,43 @@ public class PrincipalServidorBloquear {
                                     if (users.containsKey(bloqueado)) {
                                         System.out.println("entro aki bro 2");
                                         if (!name.equals(bloqueado)) {
-
+                                            if (!users.get(name).bloqueados.contains(bloqueado)) {
+                                                users.get(name).bloqueados.add(bloqueado);
+                                            users.get(name).out.println("MESSAGE bloqueaste a: " + bloqueado); 
+                                            }
                                             /*users.get(Receiver).out.println("MESSAGE (PM-FROM-" + name + "): " + message);
                                         users.get(name).out.println("MESSAGE (PM-TO-" + Receiver + "): " + message);*/
-                                            users.get(name).bloqueados.add(bloqueado);
-                                            users.get(name).out.println("MESSAGE bloqueaste a: " + bloqueado);
+                                           
                                         }
 
                                     }
                                 }
 
                             } else {
+                                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa");
+                                if (input.toLowerCase().startsWith("/desbloquear")) {
+                                  System.out.println("entro al desbloquea");
+                                if (input.indexOf(" ") >= 0) {
+                                    int inp = input.indexOf(' ') + 1;
+                                    String desbloqueado = input.substring(inp);
+                                    System.out.println(users.containsKey(desbloqueado));
+                                    if (users.containsKey(desbloqueado)) {
+                                        System.out.println("entro al desbloquea");
+                                        if (!name.equals(desbloqueado)) {
+                                            if (users.get(name).bloqueados.contains(desbloqueado)) {
+                                                users.get(name).bloqueados.remove(desbloqueado);
+                                            users.get(name).out.println("MESSAGE desbloqueaste a: " + desbloqueado); 
+                                            }
+                                            /*users.get(Receiver).out.println("MESSAGE (PM-FROM-" + name + "): " + message);
+                                        users.get(name).out.println("MESSAGE (PM-TO-" + Receiver + "): " + message);*/
+                                           
+                                        }
 
-                                for (Cliente user : users.values()) {
+                                    }
+                                }
+
+                            }else{
+                                     for (Cliente user : users.values()) {
                                     System.out.println(user.bloqueados);
                                     System.out.println(users.get(name));
                                     if (!user.bloqueados.contains(users.get(name).nombre)) {
@@ -118,6 +149,9 @@ public class PrincipalServidorBloquear {
                                     }
 
                                 }
+                                    
+                                }
+                               
                             }
                         }
 
@@ -143,5 +177,21 @@ public class PrincipalServidorBloquear {
 
         }
     }
+    public static void guardarMap(Map<String, Cliente> users){
+        try
+           {
+                  FileOutputStream fos =
+                  new FileOutputStream("hashmap.ser");
+                  ObjectOutputStream oos = new ObjectOutputStream(fos);
+                  oos.writeObject(users);
+                  oos.close();
+                  fos.close();
+                  System.out.printf("Serialized HashMap data is saved in hashmap.ser");
+           }catch(IOException ioe)
+            {
+                  ioe.printStackTrace();
+            }
+    }
+    
 
 }
