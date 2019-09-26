@@ -3,16 +3,14 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Cliente {
+public class Cliente implements Serializable{
 
     String nombre;
-    PrintWriter out;
     ArrayList<String> bloqueados = new ArrayList<>();
 
     
-    public Cliente(String nombre, PrintWriter out) {
+    public Cliente(String nombre) {
         this.nombre = nombre;
-        this.out = out;
         
     }
 
