@@ -29,8 +29,6 @@ public class PrincipalClienteBloquear {
         frame.getContentPane().add(textField,BorderLayout.SOUTH);
         frame.getContentPane().add(new JScrollPane(messageArea));
         frame.pack();
-        
-        
         textField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -42,10 +40,11 @@ public class PrincipalClienteBloquear {
     private  String getname(){
         return JOptionPane.showInputDialog(
         frame,
-        "Choose a screen name",
-        "Screen name selection",
+        "Escoge un nombre",
+        "Nombre: ",
         JOptionPane.PLAIN_MESSAGE
         );
+ 
     }
     
     private void run() throws IOException{
@@ -56,14 +55,14 @@ public class PrincipalClienteBloquear {
             
             while (in.hasNextLine()) {                
                 String line = in.nextLine();
-                if (line.startsWith("SUBMITNAME")) {
+                if (line.startsWith("NOMBREDEENVIO")) {
                     out.println(getname());
-                }else if(line.startsWith("NAMEACCEPTED")){
-                    System.out.println(line);
-                    this.frame.setTitle("Chatter -"+line.substring(13));
+                }else if(line.startsWith("NOMBREACEPTADO")){
+                    //System.out.println(line);
+                    this.frame.setTitle("Chatter -"+line.substring(15));
                     textField.setEditable(true);
-                }else if(line.startsWith("MESSAGE")){
-                    System.out.println(line);
+                }else if(line.startsWith("MENSAJE")){
+                    //System.out.println(line);
                     messageArea.append(line.substring(8)+"\n");
                 }
             }
@@ -76,7 +75,7 @@ public class PrincipalClienteBloquear {
     }
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
-            System.err.println("pass the server as to");
+            System.err.println("es necesario poner la ip");
             return;
         }
         PrincipalClienteBloquear cliente = new PrincipalClienteBloquear(args[0]);
