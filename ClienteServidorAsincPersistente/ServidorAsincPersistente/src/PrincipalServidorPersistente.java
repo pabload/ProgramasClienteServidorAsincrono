@@ -1,4 +1,4 @@
-
+//final
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,7 +34,6 @@ public class PrincipalServidorPersistente {
             Cliente value = entry.getValue();
             System.out.println(key);
         }
-
         ExecutorService pool = Executors.newFixedThreadPool(500);
         try (ServerSocket listener = new ServerSocket(59001)) {
             System.out.println(listener.getInetAddress());

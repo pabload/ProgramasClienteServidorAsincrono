@@ -1,5 +1,4 @@
-
-
+//final
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -45,6 +44,9 @@ public class PrincipalServidorEjemplo {
                 while (true) {
                     out.println("SUBMITNAME");
                     nombre = in.nextLine();
+                    if (nombre.equals("null")) {
+                        return;
+                    }
                     if (nombre == null) {
                         return;
                     }
@@ -78,7 +80,7 @@ public class PrincipalServidorEjemplo {
                     WRITERS.remove(out);
                 }
                 if (nombre != null) {
-                    System.out.println(nombre + " está saliendo");
+                    //System.out.println(nombre + " está saliendo");
                     NOMBRES.remove(nombre);
                     for (PrintWriter writer : WRITERS) {
                         writer.println("MESSAGE " + nombre + " ha salido");

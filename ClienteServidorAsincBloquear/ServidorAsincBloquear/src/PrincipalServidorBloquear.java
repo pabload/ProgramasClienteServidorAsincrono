@@ -1,4 +1,4 @@
-
+//final
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -113,7 +113,7 @@ public class PrincipalServidorBloquear {
             } finally {
                 if (Escritor != null || Nombre != null) {
                     //System.out.println(Nombre + " se va");
-                    sesiones.remove(Nombre);
+                    
                     for (Map.Entry<String, Cliente> user : usuarios.entrySet()) {
                         String nombre = user.getKey();
                         Cliente obejto = user.getValue();
@@ -123,6 +123,8 @@ public class PrincipalServidorBloquear {
                         }
 
                     }
+                    sesiones.remove(Nombre);
+                    usuarios.remove(Nombre);
 
                 }
                 try {

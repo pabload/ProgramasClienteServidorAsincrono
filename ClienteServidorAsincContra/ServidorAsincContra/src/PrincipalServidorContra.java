@@ -1,4 +1,4 @@
-
+//final
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -61,8 +61,14 @@ public class PrincipalServidorContra {
                 while (true) {
                     Escritor.println("NOMBREDEENVIO");
                     Nombre = Entrada.nextLine();
+                    if (Nombre.equals("null")) {
+                        return;
+                    }
                     Escritor.println("CONTRA");
                     Contra= Entrada.nextLine();
+                    if (Contra.equals("null")) {
+                        return;
+                    }
                     if (Nombre == null || Nombre.equalsIgnoreCase("salir") || Nombre.isEmpty() || sesiones.containsKey(Nombre)) {
                         continue;
                     }
@@ -119,20 +125,21 @@ public class PrincipalServidorContra {
                 System.out.println(e);
             } finally {
                 if (Escritor != null || Nombre != null) {
-                    //System.out.println(Nombre + " se va");
-                    sesiones.remove(Nombre);
-                    for (Map.Entry<String, Cliente> user : usuarios.entrySet()) {
-                        String nombre = user.getKey();
-                        Cliente obejto = user.getValue();
-                        //System.out.println("llego aki");
-                        if (!obejto.bloqueados.contains(usuarios.get(Nombre).nombre) && sesiones.containsKey(nombre)) {
-                            //System.out.println("llego aki 3");
-                            sesiones.get(nombre).println("MENSAJE " + Nombre + ": " + "se fue");
+                    //System.out.println(Nombre + " se va");  
+                    if (!Nombre.equals("null")&& !Contra.equals("null")) {
+                         sesiones.remove(Nombre);
+                        for (Map.Entry<String, Cliente> user : usuarios.entrySet()) {
+                            String nombre = user.getKey();
+                            Cliente obejto = user.getValue();
+                            //System.out.println("llego aki");
+                            if (!obejto.bloqueados.contains(usuarios.get(Nombre).nombre) && sesiones.containsKey(nombre)) {
+                                //System.out.println("llego aki 3");
+                                sesiones.get(nombre).println("MENSAJE " + Nombre + ": " + "se fue");
+
+                            }
 
                         }
-
                     }
-
                 }
                 try {
                     socket.close();

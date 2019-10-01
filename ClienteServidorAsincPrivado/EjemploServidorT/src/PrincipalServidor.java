@@ -1,4 +1,4 @@
-
+//final
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -49,6 +49,9 @@ public class PrincipalServidor {
                 while (true) {
                     out.println("NOMBREDEENVIO");
                     name = in.nextLine();
+                    if (name.equals("null")) {
+                        return;
+                    }
                     if (name == null || name.equalsIgnoreCase("salir") || name.isEmpty()) {
                         continue;
                     }
@@ -94,7 +97,7 @@ public class PrincipalServidor {
             } catch (Exception e) {
                 System.out.println(e);
             } finally {
-                if (out != null || name != null) {
+                if ((out != null || name != null)&&(!name.equals("null"))) {
                     System.out.println(name + " se va");
                     users.remove(name);
                     for (PrintWriter writer : users.values()) {
