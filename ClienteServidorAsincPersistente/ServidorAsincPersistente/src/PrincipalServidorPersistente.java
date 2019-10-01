@@ -19,12 +19,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Handler;
 
-public class PrincipalServidorBloquear {
+public class PrincipalServidorPersistente {
 
     private static Map<String, Cliente> usuarios = new HashMap<>();
     private static Map<String, PrintWriter> sesiones = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
+        PrincipalServidorPersistente ps =new PrincipalServidorPersistente();
+        if (ps.cargarDatos() != null) {
+            usuarios = ps.cargarDatos();
+        }
+        for (Map.Entry<String, Cliente> entry : usuarios.entrySet()) {
+            String key = entry.getKey();
+            Cliente value = entry.getValue();
+            System.out.println(key);
+        }
+
         ExecutorService pool = Executors.newFixedThreadPool(500);
         try (ServerSocket listener = new ServerSocket(59001)) {
             System.out.println(listener.getInetAddress());
@@ -35,6 +45,7 @@ public class PrincipalServidorBloquear {
         }
 
     }
+
     public static class Handler implements Runnable {
 
         private String Nombre;
@@ -66,6 +77,7 @@ public class PrincipalServidorBloquear {
                             usuarios.put(Nombre, c);
                             sesiones.put(Nombre, Escritor);
                             Escritor.println("NOMBREACEPTADO " + Nombre);
+                            guardarMap(usuarios);
                             for (PrintWriter pw : sesiones.values()) {
                                 pw.println("MENSAJE " + Nombre + " se unio");
                             }
@@ -112,18 +124,18 @@ public class PrincipalServidorBloquear {
                 System.out.println(e);
             } finally {
                 if (Escritor != null || Nombre != null) {
-                    //System.out.println(Nombre + " se va");
                     sesiones.remove(Nombre);
-                    for (Map.Entry<String, Cliente> user : usuarios.entrySet()) {
-                        String nombre = user.getKey();
-                        Cliente obejto = user.getValue();
-                        if (!obejto.bloqueados.contains(usuarios.get(Nombre).nombre) && sesiones.containsKey(nombre)) {
-                            sesiones.get(nombre).println("MENSAJE " + Nombre + ": " + "se fue");
+                    if (sesiones.containsKey(Nombre)) {
+                        for (Map.Entry<String, Cliente> user : usuarios.entrySet()) {
+                            String nombre = user.getKey();
+                            Cliente obejto = user.getValue();
+                            if (!obejto.bloqueados.contains(usuarios.get(Nombre).nombre) && sesiones.containsKey(nombre)) {
+                                sesiones.get(nombre).println("MENSAJE " + Nombre + ": " + "se fue");
+
+                            }
 
                         }
-
                     }
-
                 }
                 try {
                     socket.close();
@@ -134,6 +146,20 @@ public class PrincipalServidorBloquear {
         }
 
         //////Metodos////////////////////////////////////////////////////////////
+        public void guardarMap(Map<String, Cliente> usuarios) {
+            try {
+                FileOutputStream fos
+                        = new FileOutputStream("hashmap.ser");
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(usuarios);
+                oos.close();
+                fos.close();
+                //System.out.printf("HashMap guardado en hashmap.ser");
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+
         public void EnviarMensaje(String input) {
             if (!input.equals("")) {
                 for (Map.Entry<String, Cliente> user : usuarios.entrySet()) {
@@ -176,6 +202,8 @@ public class PrincipalServidorBloquear {
                         if (!usuarios.get(Nombre).bloqueados.contains(bloqueado)) {
                             usuarios.get(Nombre).bloqueados.add(bloqueado);
                             sesiones.get(usuarios.get(Nombre).nombre).println("MENSAJE bloqueaste a: " + bloqueado);
+                            guardarMap(usuarios);
+
                         }
 
                     }
@@ -194,6 +222,7 @@ public class PrincipalServidorBloquear {
                         if (usuarios.get(Nombre).bloqueados.contains(desbloqueado)) {
                             usuarios.get(Nombre).bloqueados.remove(desbloqueado);
                             sesiones.get(usuarios.get(Nombre).nombre).println("MENSAJE desbloqueaste a: " + desbloqueado);
+                            guardarMap(usuarios);
                         }
                     }
 
@@ -202,4 +231,34 @@ public class PrincipalServidorBloquear {
         }
 
     }
+
+    public HashMap<String, Cliente> cargarDatos() {
+        HashMap<String, Cliente> users = null;
+        try {
+            File archivo = new File("hashmap.ser");
+            if (!archivo.exists()) {
+                archivo.createNewFile();
+
+            } else {
+                if (archivo.length() == 0) {
+                    return users;
+                } else {
+                    FileInputStream fis = new FileInputStream("hashmap.ser");
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    users = (HashMap) ois.readObject();
+                    ois.close();
+                    fis.close();
+                }
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            return users;
+        } catch (ClassNotFoundException c) {
+            System.out.println("Class not found");
+            c.printStackTrace();
+            return users;
+        }
+        return users;
+    }
+
 }
